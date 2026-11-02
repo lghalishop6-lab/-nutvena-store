@@ -1,0 +1,153 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NUTVENA | المتجر الرسمي</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#faf8f3;color:#30251d}
+header{background:#302018;color:white;padding:18px;text-align:center}
+.logo{font-size:30px;font-weight:bold;letter-spacing:3px;color:#eac58e}
+nav{display:flex;justify-content:center;gap:18px;padding:14px;background:#493225;color:white}
+button{cursor:pointer;border:0;border-radius:8px;padding:11px 17px;font-weight:bold}
+.hero{text-align:center;padding:45px 15px;background:#eee1cf}
+.hero h1{font-size:29px}
+.hero p{color:#685344}
+.container{max-width:950px;margin:25px auto;padding:15px}
+.products{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}
+.card{background:white;border-radius:13px;padding:18px;text-align:center;box-shadow:0 2px 12px #00000010}
+.product-img{height:145px;border-radius:10px;background:#f0e4d2;display:flex;align-items:center;justify-content:center;font-size:65px}
+.price{font-size:22px;font-weight:bold;color:#87532c}
+.add{background:#513522;color:white;width:100%;margin-top:10px}
+.cart{background:white;padding:20px;border-radius:12px;margin-top:30px}
+.cart button{background:#27834b;color:white}
+footer{text-align:center;background:#302018;color:white;padding:25px;margin-top:35px}
+#language{background:#eac58e;color:#302018}
+</style>
+</head>
+<body>
+
+<header>
+<div class="logo">NUTVENA</div>
+<p id="subtitle">الطبيعة في كل ملعقة</p>
+</header>
+
+<nav>
+<button id="language" onclick="changeLanguage()">Français</button>
+<span id="navtext">متجرنا | منتجاتنا | طلباتكم</span>
+</nav>
+
+<section class="hero">
+<h1 id="welcome">مرحبا بكم في NUTVENA</h1>
+<p id="description">منتجات لذيذة بجودة نعتز بها، صنع في الجزائر</p>
+</section>
+
+<main class="container">
+<h2 id="productsTitle">منتجاتنا</h2>
+<div class="products" id="products"></div>
+
+<section class="cart">
+<h2 id="cartTitle">🛒 سلة المشتريات</h2>
+<div id="cartItems">السلة فارغة</div>
+<h3 id="total">المجموع: 0 دج</h3>
+<button onclick="order()" id="orderButton">اطلب عبر WhatsApp</button>
+</section>
+</main>
+
+<footer>
+<strong>NUTVENA</strong>
+<p id="footerText">صنع بكل عناية في الجزائر 🇩🇿</p>
+</footer>
+
+<script>
+const whatsappNumber = "213XXXXXXXXX";
+
+const items = [
+{id:1,ar:"زبدة الفول السوداني الطبيعية 370غ",
+fr:"Beurre de cacahuète naturel 370g",price:350,emoji:"🥜"},
+{id:2,ar:"كريمة الشوكولاتة 300غ",
+fr:"Crème chocolat 300g",price:400,emoji:"🍫"}
+];
+
+let lang="ar";
+let cart=[];
+
+function changeLanguage(){
+lang=lang==="ar"?"fr":"ar";
+document.documentElement.lang=lang;
+document.documentElement.dir=lang==="ar"?"rtl":"ltr";
+document.getElementById("language").textContent=lang==="ar"?"Français":"العربية";
+document.getElementById("subtitle").textContent=lang==="ar"?"الطبيعة في كل ملعقة":"Le naturel dans chaque cuillère";
+document.getElementById("navtext").textContent=lang==="ar"?"متجرنا | منتجاتنا | طلباتكم":"Boutique | Produits | Commandes";
+document.getElementById("welcome").textContent=lang==="ar"?"مرحبا بكم في NUTVENA":"Bienvenue chez NUTVENA";
+document.getElementById("description").textContent=lang==="ar"?"منتجات لذيذة بجودة نعتز بها، صنع في الجزائر":"Des produits savoureux, fabriqués en Algérie";
+document.getElementById("productsTitle").textContent=lang==="ar"?"منتجاتنا":"Nos produits";
+document.getElementById("cartTitle").textContent=lang==="ar"?"🛒 سلة المشتريات":"🛒 Mon panier";
+document.getElementById("orderButton").textContent=lang==="ar"?"اطلب عبر WhatsApp":"Commander sur WhatsApp";
+document.getElementById("footerText").textContent=lang==="ar"?"صنع بكل عناية في الجزائر 🇩🇿":"Fabriqué avec soin en Algérie 🇩🇿";
+render();
+}
+
+function render(){
+document.getElementById("products").innerHTML=items.map(p=>`
+<div class="card">
+<div class="product-img">${p.emoji}</div>
+<h3>${lang==="ar"?p.ar:p.fr}</h3>
+<div class="price">${p.price} دج</div>
+<button class="add" onclick="add(${p.id})">${lang==="ar"?"أضف إلى السلة":"Ajouter au panier"}</button>
+</div>`).join("");
+showCart();
+}
+
+function add(id){
+cart.push(id);
+showCart();
+}
+
+function showCart(){
+let total=0;
+let counts={};
+cart.forEach(id=>counts[id]=(counts[id]||0)+1);
+let html="";
+items.forEach(p=>{
+if(counts[p.id]){
+total+=p.price*counts[p.id];
+html+=`<p>${lang==="ar"?p.ar:p.fr} × ${counts[p.id]} 
+<button onclick="removeItem(${p.id})">−</button></p>`;
+}
+});
+document.getElementById("cartItems").innerHTML=html||(lang==="ar"?"السلة فارغة":"Panier vide");
+document.getElementById("total").textContent=(lang==="ar"?"المجموع: ":"Total: ")+total+" DZD";
+}
+
+function removeItem(id){
+let i=cart.indexOf(id);
+if(i!==-1)cart.splice(i,1);
+showCart();
+}
+
+function order(){
+if(!cart.length){
+alert(lang==="ar"?"السلة فارغة":"Votre panier est vide");
+return;
+}
+let message=lang==="ar"?"طلب جديد من متجر NUTVENA%0A":"Nouvelle commande NUTVENA%0A";
+items.forEach(p=>{
+let n=cart.filter(x=>x===p.id).length;
+if(n)message+=(lang==="ar"?p.ar:p.fr)+" x "+n+"%0A";
+});
+let total=cart.reduce((s,id)=>s+items.find(p=>p.id===id).price,0);
+message+=(lang==="ar"?"المجموع: ":"Total: ")+total+" DZD";
+if(whatsappNumber==="213XXXXXXXXX"){
+alert(lang==="ar"?"يجب إضافة رقم WhatsApp الخاص بالمتجر أولاً.":"Veuillez configurer le numéro WhatsApp.");
+return;
+}
+window.open("https://wa.me/"+whatsappNumber+"?text="+message,"_blank");
+}
+
+render();
+</script>
+</body>
+</html>
